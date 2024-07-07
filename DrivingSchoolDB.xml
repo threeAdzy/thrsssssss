@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <object-set>
+        <table path="driving_school.user">
+            <table path="driving_school.apply" from="user_id" to="person_id"/>
+        </table>
+        <table path="driving_school.user">
+            <table path="driving_school.evaluate" from="user_id" to="user_id"/>
+        </table>
+        <table path="driving_school.user">
+            <table path="driving_school.grade" from="user_id" to="user_id"/>
+        </table>
+        <table path="driving_school.user">
+            <table path="driving_school.pass_subjects" from="user_id" to="user_id"/>
+        </table>
+        <table path="driving_school.user">
+            <table path="driving_school.study" from="user_id" to="user_id"/>
+        </table>
+    </object-set>
+</data>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.drivingschool.mapper.UserMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user (user_number, name, password, identity_card, sex, phone, coach_id, user_img)
+        VALUES (#{userNumber}, #{name}, #{password}, #{identityCard}, #{sex}, #{phone}, #{coachId}, #{userImg})
+    </insert>
+    <update id="updateSelf">
+
+        UPDATE user
+        <set>
+            <if test="userNumber != null">
+                user_number = #{userNumber},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="identityCard != null">
+                identity_card = #{identityCard},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="userImg != null">
+                user_img = #{userImg},
+            </if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+    <update id="update">
+        UPDATE user
+        <set>
+            <if test="userNumber != null">user_number = #{userNumber},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="password != null and password !=''">password = #{password},</if>
+            <if test="identityCard != null">identity_card = #{identityCard},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="lv != null">lv = #{lv},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="coachId != null">coach_id = #{coachId},</if>
+            <if test="userImg != null">user_img = #{userImg},</if>
+        </set>
+        WHERE user_id = #{userId}
+
+    </update>
+    <select id="pageQuery" resultType="com.drivingschool.pojo.vo.UserPageQueryVO">
+
+        SELECT u.*, ps.subject_one, ps.subject_two, ps.subject_three, ps.subject_four,g.classify
+        FROM user u
+        LEFT JOIN pass_subjects ps ON u.user_id = ps.user_id
+        LEFT JOIN grade g ON u.user_id = g.user_id
+        <where>
+            <if test="coachId != null">
+                AND u.coach_id = #{coachId}
+            </if>
+            <if test="name != null">
+                AND u.name like concat('%',#{name},'%')
+            </if>
+            <if test="sex != null">
+                AND u.sex = #{sex}
+            </if>
+            <if test="classify != null and classify != ''">
+                AND g.classify = #{classify}
+            </if>
+        </where>
+
+    </select>
+<!--    <select id="pageStudyQuery" resultType="com.drivingschool.pojo.vo.UserPageStudyVO">-->
+<!--        SELECT s.*, u.name , u.sex ,u.phone-->
+<!--        FROM study s-->
+<!--        LEFT JOIN user u ON s.user_id = u.user_id-->
+<!--        LEFT JOIN coach c ON s.coach_id = c.coach_id-->
+<!--        <where>-->
+<!--            <if test="coachId != null">-->
+<!--                AND s.coach_id = #{coachId}-->
+<!--            </if>-->
+<!--            <if test="name != null">-->
+<!--                AND u.name like concat('%',#{name},'%')-->
+<!--            </if>-->
+<!--            <if test="sex != null">-->
+<!--                AND u.sex = #{sex}-->
+<!--            </if>-->
+<!--            <if test="begin != null and end != null">-->
+<!--                and start_time between #{datebegin} and #{dateend}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
+    <select id="pageAddDate" resultType="com.drivingschool.pojo.vo.UserPageStudyVO">
+        SELECT s.*, u.name , u.sex ,u.phone,u.user_img,g.classify
+        FROM study s
+        LEFT JOIN user u ON s.user_id = u.user_id
+        LEFT JOIN coach c ON s.coach_id = c.coach_id
+        LEFT JOIN grade g ON u.user_id = g.user_id
+        <where>
+            <if test="coachId != null">
+                AND s.coach_id = #{coachId}
+            </if>
+
+            <if test="subject != null">
+                AND s.subject = #{subject}
+            </if>
+            <if test="name != null">
+                AND u.name like concat('%',#{name},'%')
+            </if>
+            <if test="sex != null">
+                AND u.sex = #{sex}
+            </if>
+            <if test="classify != null and classify != ''">
+                AND g.classify = #{classify}
+            </if>
+            <if test="begin != null and end != null">
+                and start_time between #{begin} and #{end}
+            </if>
+            <if test="begin != null and end == null">
+                and start_time > #{begin}
+            </if>
+            <if test="end != null and begin ==null">
+                and end_time &lt; #{end}
+            </if>
+        </where>
+    </select>
+    <select id="pageAdminUser" resultType="com.drivingschool.pojo.vo.UserAdminPageVO">
+        SELECT u.*, c.coach_id, c.name AS coachName, c.coach_img AS coachImg,g.classify,
+        ps.subject_one, ps.subject_two, ps.subject_three, ps.subject_four
+        FROM user u
+
+        LEFT JOIN pass_subjects ps ON u.user_id = ps.user_id
+        LEFT JOIN coach c ON u.coach_id = c.coach_id
+        LEFT JOIN grade g ON u.user_id = g.user_id
+        <where>
+            <if test="userName != null and userName != ''">
+                AND u.name like concat('%',#{userName},'%')
+            </if>
+
+            <if test="sex != null">
+                AND u.sex = #{sex}
+            </if>
+            <if test="classify != null and classify != ''">
+                AND g.classify = #{classify}
+            </if>
+            <if test="state != null">
+                AND u.state = #{state}
+            </if>
+            <if test="allsubjects == true">
+                AND ps.subject_one = 1 AND ps.subject_two = 1 AND ps.subject_three = 1 AND ps.subject_four = 1
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

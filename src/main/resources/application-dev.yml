@@ -1,0 +1,6 @@
+driving:
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: LTAI5tMUvPFDeSzjj85RvPvQ
+    access-key-secret:
+    bucket-name: sky-tlias-threeaaa

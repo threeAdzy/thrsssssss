@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.drivingschool.mapper.CoachMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="coachId">
+
+        INSERT INTO coach (coach_number, name, password, age, sex, phone, car_id, coach_img)
+        VALUES (#{coachNumber}, #{name}, #{password}, #{age}, #{sex}, #{phone}, #{carId}, #{coachImg})
+
+
+    </insert>
+    <update id="update" parameterType="com.drivingschool.pojo.entity.Coach">
+        UPDATE coach
+        <set>
+            <if test="coachNumber != null">coach_number = #{coachNumber},</if>
+            <if test="name != null and name !=''">name = #{name},</if>
+            <if test="password != null and password !='' ">password = #{password},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="lv != null">lv = #{lv},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="carId != null">car_id = #{carId},</if>
+            <if test="coachImg != null">coach_img = #{coachImg},</if>
+        </set>
+        WHERE coach_id = #{coachId}
+    </update>
+
+
+    <select id="pageQuery" resultType="com.drivingschool.pojo.vo.CoachVO">
+        SELECT c.*, car.car_number, car.car_img,car.car_id
+        FROM coach c
+        LEFT JOIN car car ON c.car_id = car.car_id
+        <where>
+            <if test="name != null">
+                AND c.name like concat('%',#{name},'%')
+            </if>
+            <if test="sex != null">
+                AND c.sex = #{sex}
+            </if>
+            <if test="state != null">
+                AND c.state = #{state}
+            </if>
+        </where>
+    </select>
+    <select id="pageQScore" resultType="com.drivingschool.pojo.vo.CoachScorePageVO">
+        SELECT
+        c.*,
+        AVG(e.score) AS avg_score,
+        COUNT(e.score) AS score_number,
+        SUM(CASE WHEN e.score = 1 THEN 1 ELSE 0 END) AS score_one,
+        SUM(CASE WHEN e.score = 2 THEN 1 ELSE 0 END) AS score_two,
+        SUM(CASE WHEN e.score = 3 THEN 1 ELSE 0 END) AS score_three,
+        SUM(CASE WHEN e.score = 4 THEN 1 ELSE 0 END) AS score_four,
+        SUM(CASE WHEN e.score = 5 THEN 1 ELSE 0 END) AS score_five
+        FROM
+        coach c
+        LEFT JOIN
+        evaluate e ON c.coach_id = e.coach_id
+        <where>
+            <if test="name != null">
+                AND c.name like concat('%',#{name},'%')
+            </if>
+            <if test="sex != null">
+                AND c.sex = #{sex}
+            </if>
+
+        </where>
+
+        GROUP BY
+        c.coach_id
+        ORDER BY
+        avg_score DESC
+    </select>
+</mapper>

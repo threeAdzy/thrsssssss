@@ -1,0 +1,80 @@
+server:
+  port: 8080
+  tomcat:
+    accept-count: 200
+    max-connections: 200
+    max-http-header-size: 209715200
+    max-http-form-post-size: 200
+  max-http-request-header-size: 209715200
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/driving_school
+    username: root
+    password: 1234
+#mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #    驼峰命名
+    map-underscore-to-camel-case: true
+
+driving:
+  jwt:
+#    管理员
+    # 设置jwt签名加密时使用的秘钥
+    admin-secret-key: dzy
+    # 设置jwt过期时间
+    admin-ttl: 7200000
+    # 设置前端传递过来的令牌名称
+    admin-token-name: token
+#    教练
+    coach-secret-key: three
+    coach-ttl: 7200000
+    coach-token-name: token
+#    用户
+    user-secret-key: aaa
+    user-ttl: 7200000
+    user-token-name: token
+
+  alioss:
+    endpoint: ${sky.alioss.endpoint}
+    access-key-id: ${sky.alioss.access-key-id}
+    access-key-secret: ${sky.alioss.endpoint}
+    bucket-name: ${sky.alioss.access-key-id}
+#spring事务管理日志
+#logging:
+#  level:
+#    org.springframework.jdbc.support.JdbcTransactionManager: debug
+
+logging:
+  level:
+    com:
+      drivingschool:
+        mapper: debug
+        service: info
+        controller: info
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.xiaominfo.knife4j.demo.web
+
+## PageHelper 分页插件配置
+#pagehelper:
+#  helperDialect : mysql
+#  reasonable : true
+#  supportMethodsArguments : true
+#  params : count=countSql

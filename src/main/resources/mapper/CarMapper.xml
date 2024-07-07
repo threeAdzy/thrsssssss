@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.drivingschool.mapper.CarMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="carId">
+        INSERT INTO car (car_number, car_img,car_state) VALUES (#{carNumber}, #{carImg},#{carState},#{coachId})
+    </insert>
+    <update id="update">
+        UPDATE car
+        <set>
+
+            <if test="carNumber != null">
+                car_number = #{carNumber},
+            </if>
+            <if test="carImg != null">
+                car_img = #{carImg},
+            </if>
+            <if test="carState != null">
+                car_state = #{carState},
+            </if>
+        </set>
+        WHERE car_id = #{carId}
+    </update>
+
+
+    <select id="pageQuery" resultType="com.drivingschool.pojo.vo.CarPageQueryVO">
+        SELECT car.*,coach.*
+        FROM car car
+        LEFT JOIN coach coach ON car.car_id = coach.car_id
+        <where>
+            <if test="carNumber != null">
+                AND car.car_number like concat('%',#{carNumber},'%')
+            </if>
+            <if test="name != null and name !=''">
+                AND coach.name like concat('%',#{name},'%')
+            </if>
+            <if test="carState != null ">
+                AND car.car_state = #{carState}
+            </if>
+        </where>
+
+ </select>
+</mapper>
