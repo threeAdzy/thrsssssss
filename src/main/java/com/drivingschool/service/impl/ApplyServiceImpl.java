@@ -1,6 +1,7 @@
 package com.drivingschool.service.impl;
 
 
+import com.alibaba.fastjson.JSON;
 import com.drivingschool.common.result.PageResult;
 import com.drivingschool.common.result.Result;
 import com.drivingschool.mapper.*;
@@ -13,6 +14,7 @@ import com.drivingschool.pojo.vo.ApplyPageVO;
 import com.drivingschool.pojo.vo.CoachVO;
 import com.drivingschool.pojo.vo.UserPageStudyVO;
 import com.drivingschool.service.ApplyService;
+import com.drivingschool.websocket.WebSocketServer;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 申请管理
@@ -43,7 +47,8 @@ public class ApplyServiceImpl implements ApplyService {
     private UserMapper userMapper;
     @Autowired
     private CarRecordMapper carRecordMapper;
-
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     /**
      * 教练新增申请
@@ -56,6 +61,17 @@ public class ApplyServiceImpl implements ApplyService {
         BeanUtils.copyProperties(applyCoachDTO, apply);
         apply.setCreateTime(LocalDateTime.now());
         applyMapper.insertCoach(apply);
+
+        CoachVO coach = coachMapper.getById(applyCoachDTO.getPersonId());
+        Car car = carMapper.getById(applyCoachDTO.getContentId());
+
+        Map map = new HashMap<>();
+        map.put("type","车辆申请");//1表示车辆申请
+        map.put("person", coach.getName());
+        map.put("content",car.getCarNumber());
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**
@@ -69,6 +85,21 @@ public class ApplyServiceImpl implements ApplyService {
         BeanUtils.copyProperties(applyCoachDTO, apply);
         apply.setCreateTime(LocalDateTime.now());
         applyMapper.insertUser(apply);
+
+
+        Car car = carMapper.getById(applyCoachDTO.getContentId());
+
+        User user = userMapper.getUserById(applyCoachDTO.getPersonId());
+
+        CoachVO coachVO = coachMapper.getById(apply.getContentId());
+
+        Map map = new HashMap<>();
+        map.put("type","更换教练");
+        map.put("person", user.getName());
+        map.put("content",coachVO.getName());
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**

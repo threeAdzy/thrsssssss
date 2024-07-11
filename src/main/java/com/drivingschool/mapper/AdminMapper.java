@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+
 @Mapper
 public interface AdminMapper {
 
@@ -16,4 +18,6 @@ public interface AdminMapper {
 
     @Update("update admin set admin_number=#{adminNumber},name=#{name} where admin_id=#{adminId}")
     void updateAdmin(Admin admin);
+
+
 }

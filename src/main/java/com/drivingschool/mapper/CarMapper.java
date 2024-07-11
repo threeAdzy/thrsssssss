@@ -19,6 +19,9 @@ public interface CarMapper {
     @Select("SELECT * FROM car WHERE car_state = 0")
     List<Car> list();
 
+    @Select("SELECT * FROM car WHERE car_id = #{carId}")
+    Car  getById(Long carId);
+
     /**
      * 选车时将状态更新为使用
      *
